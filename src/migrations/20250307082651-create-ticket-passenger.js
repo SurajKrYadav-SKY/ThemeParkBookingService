@@ -12,6 +12,11 @@ module.exports = {
       booking_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: "Bookings",
+          key: "id",
+          as: "booking_id",
+        },
       },
       name: {
         type: Sequelize.STRING,

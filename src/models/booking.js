@@ -9,11 +9,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.Ticket, {
+        foreignKey: "ticket_id",
+        onDelete: "CASCADE",
+      });
+
+      this.hasMany(models.TicketPassenger, {
+        foreignKey: "booking_id",
+      });
     }
   }
   Booking.init(
     {
-      ticket_id: { type: DataTypes.INTEGER, allowNull: false },
+      ticket_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       number_of_adults: {
         type: DataTypes.INTEGER,
         allowNull: false,
