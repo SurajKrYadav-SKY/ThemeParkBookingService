@@ -1,4 +1,4 @@
-const Booking = require("../models/booking");
+const { Booking, Ticket } = require("../models/index");
 
 class BookingRepository {
   async createBooking(data) {
@@ -6,7 +6,7 @@ class BookingRepository {
       const booking = await Booking.create(data);
       return booking;
     } catch (error) {
-      console.log("Something went wrong in the repository layer");
+      console.log("Something went wrong in the booking repository layer");
       throw { error };
     }
   }
@@ -16,24 +16,24 @@ class BookingRepository {
       const booking = await Booking.findByPk(id);
       return booking;
     } catch (error) {
-      console.log("Something went wrong in the repository layer");
+      console.log("Something went wrong in the booking repository layer");
       throw { error };
     }
   }
 
-  async getBookingsForDate(pard_id, visit_date) {
+  async getBookingsForDate(park_id, visit_date) {
     try {
       const bookingForDate = await Booking.findAll({
         include: [
           {
             model: Ticket,
-            where: { pard_id, visit_date },
+            where: { park_id, visit_date },
           },
         ],
       });
       return bookingForDate;
     } catch (error) {
-      console.log("Something went wrong in the repository layer");
+      console.log("Something went wrong in the booking repository layer");
       throw { error };
     }
   }

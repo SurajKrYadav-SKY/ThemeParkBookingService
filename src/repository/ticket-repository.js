@@ -1,4 +1,4 @@
-const Ticket = require("../models/ticket");
+const { Ticket } = require("../models/index");
 
 class TicketRepository {
   async createTicket(data) {
@@ -6,7 +6,7 @@ class TicketRepository {
       const ticket = await Ticket.create(data);
       return ticket;
     } catch (error) {
-      console.log("Something went wrong in the repository layer");
+      console.log("Something went wrong in the ticket repository layer");
       throw { error };
     }
   }
@@ -16,7 +16,7 @@ class TicketRepository {
       const ticket = await Ticket.findByPk(id);
       return ticket;
     } catch (error) {
-      console.log("Something went wrong in the repository layer");
+      console.log("Something went wrong in the ticket repository layer");
       throw { error };
     }
   }

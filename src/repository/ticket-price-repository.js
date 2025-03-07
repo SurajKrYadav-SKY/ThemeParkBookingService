@@ -1,4 +1,4 @@
-const TicketPrice = require("../models/index");
+const { TicketPrice } = require("../models/index");
 
 class TicketPriceRepository {
   async getPricesByParkId(park_id) {
@@ -8,7 +8,7 @@ class TicketPriceRepository {
       });
       return pricesByPark;
     } catch (error) {
-      console.log("Something went wrong in the repository layer");
+      console.log("Something went wrong in the ticket price repository layer");
       throw { error };
     }
   }

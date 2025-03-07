@@ -20,7 +20,7 @@ const createBooking = async (req, res) => {
     console.log("Something went wrong in the controller layer");
     res.status(500).json({
       success: false,
-      message: "Successfully created the booking",
+      message: "Failed to create the booking",
       error: error,
     });
   }
