@@ -109,8 +109,8 @@ class BookingService {
 
       const bookingPayload = {
         ticket_id: ticket.id,
-        no_of_adults,
-        no_of_children,
+        number_of_adults: no_of_adults,
+        number_of_children: no_of_children,
         total_price,
       };
 
