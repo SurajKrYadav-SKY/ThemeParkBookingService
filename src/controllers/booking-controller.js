@@ -15,12 +15,10 @@ const createBooking = async (req, res) => {
       data: response,
       success: true,
       message: "Successfully created the booking",
-      error: {},
     });
   } catch (error) {
     console.log("Something went wrong in the controller layer");
     res.status(500).json({
-      data: {},
       success: false,
       message: "Successfully created the booking",
       error: error,
