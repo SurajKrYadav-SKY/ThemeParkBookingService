@@ -1,4 +1,3 @@
-const { where } = require("sequelize");
 const Booking = require("../models/booking");
 
 class BookingRepository {

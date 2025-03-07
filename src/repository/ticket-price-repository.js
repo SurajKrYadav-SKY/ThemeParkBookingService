@@ -14,4 +14,4 @@ class TicketPriceRepository {
   }
 }
 
-module.exports = new TicketPriceRepository();
+module.exports = TicketPriceRepository;
