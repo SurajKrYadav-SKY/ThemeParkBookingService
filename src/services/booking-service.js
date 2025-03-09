@@ -2,6 +2,8 @@ const axios = require("axios");
 const {
   USER_SERVICE_PATH,
   PARK_SERVICE_PATH,
+  CONFIRMATION_BINDING_KEY,
+  REMINDER_BINDING_KEY,
 } = require("../config/serverConfig");
 const {
   TicketPassengerRepository,
@@ -9,6 +11,7 @@ const {
   TicketPriceRepository,
   TicketRepository,
 } = require("../repository/index");
+const { createChannel, publishMessage } = require("../utils/messageQueue");
 
 class BookingService {
   static CHILD_AGE_LIMIT = 12;
@@ -19,6 +22,14 @@ class BookingService {
     this.ticketRepository = new TicketRepository();
     this.bookingRepository = new BookingRepository();
     this.ticketPassengerRepository = new TicketPassengerRepository();
+    this.channel = null;
+  }
+
+  async initializeChannel() {
+    if (!this.channel) {
+      this.channel = await createChannel();
+    }
+    return this.channel;
   }
 
   async createBooking({ user_id, park_id, visit_date, passengers }) {
@@ -44,6 +55,8 @@ class BookingService {
       // this is to check whether user exist or not
       const userRequestURL = `${USER_SERVICE_PATH}/api/v1/users/${user_id}`;
       const userResponse = await axios.get(userRequestURL);
+
+      console.log("RECEPIENT EMAIL : ", userResponse.data.data.email);
 
       if (!userResponse.data) {
         throw new Error("User not found");
@@ -127,6 +140,52 @@ class BookingService {
         })
       );
       await Promise.all(passengerPromises);
+
+      // publishig to RabbitMQ
+      const channel = await this.initializeChannel();
+
+      // for confirmation notification
+      const confirmationPayload = {
+        service: "CREATE_NOTIFICATION",
+        data: {
+          subject: "Booking Confirmation",
+          content: `Your booking for the park - ${park_id} on ${visit_date} is confirmed!`,
+          recipientEmail: userResponse.data.data.email,
+          status: "pending",
+          type: "confirmation",
+          notificationTime: new Date(),
+          booking_id: booking.id,
+          visit_date,
+        },
+      };
+
+      await publishMessage(
+        channel,
+        CONFIRMATION_BINDING_KEY,
+        JSON.stringify(confirmationPayload)
+      );
+
+      // for reminder notification
+      const reminderTime = new Date(visit_date);
+      reminderTime.setHours(6, 0, 0, 0);
+      const reminderPayload = {
+        service: "CREATE_NOTIFICATION",
+        data: {
+          subject: "Reminder for your trip to the theme park",
+          content: `Reminder: Your trip to park ${park_id} is today, ${visit_date}!. Best of luck. Enjoy to your fullest.`,
+          recipientEmail: userResponse.data.data.email,
+          status: "pending",
+          type: "reminder",
+          notificationTime: reminderTime,
+          booking_id: booking.id,
+          visit_date,
+        },
+      };
+      await publishMessage(
+        channel,
+        REMINDER_BINDING_KEY,
+        JSON.stringify(reminderPayload)
+      );
 
       return {
         booking,
