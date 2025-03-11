@@ -1,10 +1,8 @@
 const { countPassengers } = require("../utils/passengers-utils");
-const {
-  UserService,
-  ParkService,
-  PricingService,
-  NotificationService,
-} = require("./index");
+const UserService = require("./user-service");
+const ParkService = require("./park-service");
+const PricingService = require("./pricing-service");
+const NotificationService = require("./notification-service");
 const {
   TicketRepository,
   BookingRepository,
